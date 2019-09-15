@@ -1,0 +1,3 @@
+<launch>
+  <node name = "motor_controller_node_1" pkg = "motor_controller" type = "motor_controller_node" output = "screen" />
+</launch>
