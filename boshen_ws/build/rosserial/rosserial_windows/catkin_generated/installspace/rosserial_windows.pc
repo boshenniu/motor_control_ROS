@@ -1,8 +1,0 @@
-prefix=/home/boshenniu/boshen_ws/install
-
-Name: rosserial_windows
-Description: Description of rosserial_windows
-Version: 0.7.7
-Cflags: 
-Libs: -L/home/boshenniu/boshen_ws/install/lib 
-Requires: 
