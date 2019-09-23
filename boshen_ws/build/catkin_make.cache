@@ -1,2 +1,0 @@
-motor_controller:roboteq/roboteq_diagnostics:roboteq/roboteq_driver:roboteq/roboteq_msgs
--DCATKIN_DEVEL_PREFIX=/home/boshenniu/boshen_ws/devel -DCMAKE_INSTALL_PREFIX=/home/boshenniu/boshen_ws/install -G Unix Makefiles

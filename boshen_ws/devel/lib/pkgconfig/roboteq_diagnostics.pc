@@ -1,8 +1,0 @@
-prefix=/home/boshenniu/boshen_ws/devel
-
-Name: roboteq_diagnostics
-Description: Description of roboteq_diagnostics
-Version: 0.2.0
-Cflags: 
-Libs: -L/home/boshenniu/boshen_ws/devel/lib 
-Requires: 

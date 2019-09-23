@@ -1,8 +1,0 @@
-prefix=/home/boshenniu/boshen_ws/install
-
-Name: roboteq_msgs
-Description: Description of roboteq_msgs
-Version: 0.2.0
-Cflags: -I/home/boshenniu/boshen_ws/install/include
-Libs: -L/home/boshenniu/boshen_ws/install/lib 
-Requires: 
