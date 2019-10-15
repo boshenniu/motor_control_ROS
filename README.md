@@ -32,4 +32,10 @@ Note: start by validate that the "position control" mode can work. Turn on the c
 The command for position control for the two motors are "!G 1 xxx" and "!G 2 xxx". Our purpose is to send the same thing to serial using ROS
 
 1. Existing code: very messy code cloned from a online repo. I debugged and changed to make it send correct command to one channel. When both motors are connected, it doesn't work. I believe this is a software and am debugging now, though the code is too confusing.
-2. Functions from Grant. These include functions for sending serial commands, getting encoder feedback. Now I have some environment issue when compiling them. 
+2. Functions from Grant. These include functions for sending serial commands, getting encoder feedback. Now I have some environment issue when compiling them.
+
+## Update (Oct 15)
+The "short" is caused by current surge generated when inputting new command. "!G 1 100" will generated ~10A.
+1. Reduce AMP limit.
+2. Reduce P gain to ~0.1.
+3. Try "close loop position relative" and "close loop position count".
