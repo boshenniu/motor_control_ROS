@@ -30,7 +30,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "roboteq_msgs/Feedback.h"
 #include "roboteq_msgs/Command.h"
 
-
 namespace roboteq {
 
 Channel::Channel(int channel_num, std::string ns, Controller* controller) :
@@ -44,6 +43,17 @@ Channel::Channel(int channel_num, std::string ns, Controller* controller) :
 
   sub_cmd_ = nh_.subscribe("/cmd_1", 1, &Channel::cmdCallback, this);
   pub_feedback_ = nh_.advertise<roboteq_msgs::Feedback>("feedback", 1);
+  
+  // if (channel_num_ == 1) {
+  //   ROS_INFO("Channel 1");
+  //   sub_cmd_ = nh_.subscribe("/cmd_1", 1, &Channel::cmdCallback, this);
+  //   pub_feedback_ = nh_.advertise<roboteq_msgs::Feedback>("feedback_1", 1);
+  // }
+  // else if (channel_num_ == 2) {
+  //   ROS_INFO("Channel 2");
+  //   sub_cmd_ = nh_.subscribe("/cmd_2", 1, &Channel::cmdCallback, this);
+  //   pub_feedback_ = nh_.advertise<roboteq_msgs::Feedback>("feedback_2", 1);
+  // }
 
   // Don't start this timer until we've received the first motion command, otherwise it
   // can interfere with code download on device startup.
@@ -53,7 +63,7 @@ Channel::Channel(int channel_num, std::string ns, Controller* controller) :
 
 void Channel::cmdCallback(const roboteq_msgs::Command& command)
 {
-  // Reset command timeout.
+  // Reset command timeout.`
   timeout_timer_.stop();
   timeout_timer_.start();
 

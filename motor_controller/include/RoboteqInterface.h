@@ -13,6 +13,7 @@ class RoboteqInterface {
                 ~RoboteqInterface();
 
                 void cmdChannels(float ch1, float ch2);
+                void cmdOneChannel(float value, int channel);
                 bool readEncoderCh1(long* enc1);
                 bool readEncoderCh2(long* enc2);
                 void resetEncoders();

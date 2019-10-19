@@ -73,8 +73,11 @@ int main(int argc, char **argv) {
     ROS_INFO("--------------------- Boshen Debug End ---------------------");
 
     controller.addChannel(new roboteq::Channel(1, "~", &controller));
-  } 
-
+  }
+  
+  // controller.addChannel(new roboteq::Channel(1, "~", &controller));
+  // controller.addChannel(new roboteq::Channel(2, "~", &controller));
+  
   // Attempt to connect and run.
   while (ros::ok()) {
     ROS_DEBUG("Attempting connection to %s at %i baud.", port.c_str(), baud);

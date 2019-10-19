@@ -14,18 +14,45 @@ RoboteqInterface::RoboteqInterface(std::string portName)
 
 RoboteqInterface::~RoboteqInterface() { port.close(); }
 
-void RoboteqInterface::cmdChannels(float ch1, float ch2)
+void RoboteqInterface::cmdOneChannel(float value, int channel)
 {
-        char buffer[4], c;
+        char buffer[11], c;
         int i = 0;
 
-        std::string cmd1 = "!S 1 " + std::to_string(ch1) + "\r\n";
-        std::string cmd2 = "!S 2 " + std::to_string(ch2) + "\r\n";
+        std::string cmd = "!G " + std::to_string(channel) + " " + std::to_string(value) + "\r\n";
+	std::cout << cmd;
+
+        asio::write(port,asio::buffer(cmd.c_str(),cmd.length()));
+        
+        bool equalFound = false;
+
+        while(reader.read_char(c)) 
+        {
+                printf("%c",c);
+                if(equalFound && c != '\n') {
+                        if(i>=11) { return; }
+                        buffer[i] = c;
+                        i++;
+                        //printf("%c",c);
+                }
+                if(c == '=') { equalFound = true; }
+                if(c == '!') { equalFound = false; }
+        }
+}
+
+void RoboteqInterface::cmdChannels(float ch1, float ch2)
+{
+        char buffer[11], c;
+        int i = 0;
+
+        std::string cmd1 = "!G 1 " + std::to_string(ch1) + "\r\n";
+        std::string cmd2 = "!G 2 " + std::to_string(ch2) + "\r\n";
 
 	std::cout << cmd1;
 
         asio::write(port,asio::buffer(cmd1.c_str(),cmd1.length()));
         asio::write(port,asio::buffer(cmd2.c_str(),cmd2.length()));
+        
         bool equalFound = false;
 
         while(reader.read_char(c)) 
@@ -71,7 +98,7 @@ void RoboteqInterface::setPPR(int PPR)
 bool RoboteqInterface::readEncoderCh1(long* enc1)
 {
         bool readSuccess = true;
-        char cmd[] = "?C 1\r\n";
+        char cmd[] = "?CSS 1\r\n";
 
         asio::write(port,asio::buffer(cmd,sizeof(cmd)));
         readSuccess = readEncoder(enc1);
@@ -81,7 +108,7 @@ bool RoboteqInterface::readEncoderCh1(long* enc1)
 bool RoboteqInterface::readEncoderCh2(long* enc2)
 {
         bool readSuccess = true;
-        char cmd[] = "?C 2\r\n";
+        char cmd[] = "?CSS 2\r\n";
         asio::write(port,asio::buffer(cmd,sizeof(cmd)));
         readSuccess = readEncoder(enc2);
         return readSuccess;

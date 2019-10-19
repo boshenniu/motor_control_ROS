@@ -72,7 +72,7 @@ void Controller::connect() {
   for (int tries = 0; tries < 5; tries++) {
     try {
       serial_->open();
-      query << "FID" << send;
+      query << "FID" << send; // Not sure why it is needed
       setSerialEcho(false);
       flush();
     } catch (serial::IOException) {
@@ -112,6 +112,7 @@ void Controller::read() {
       if (msg[1] == 's') {
         processStatus(msg);
       } else if (msg[1] == 'f') {
+        ROS_INFO("Boshen debugging: here");
         processFeedback(msg);
       }
     } else {
