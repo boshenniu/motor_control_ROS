@@ -20,7 +20,7 @@ void RoboteqInterface::cmdOneChannel(float value, int channel)
         int i = 0;
 
         std::string cmd = "!G " + std::to_string(channel) + " " + std::to_string(value) + "\r\n";
-	std::cout << cmd;
+	// std::cout << cmd;
 
         asio::write(port,asio::buffer(cmd.c_str(),cmd.length()));
         

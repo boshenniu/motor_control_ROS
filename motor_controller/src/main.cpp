@@ -2,8 +2,8 @@
 #include "ros/ros.h"
 #include <sstream>
 
-#include "roboteq_msgs/Command.h"
-#include "roboteq_msgs/Feedback.h"
+// #include "roboteq_msgs/Command.h"
+// #include "roboteq_msgs/Feedback.h"
 #include "std_msgs/Float32.h"
 
 #include "RoboteqInterface.cpp"
@@ -56,36 +56,44 @@ public:
     ros::Subscriber cmd_sub_2;
     RoboteqInterface interface;
     long enc_read_1, enc_read_2;
-    MotorController(int controller_num, std::string portName) 
+    int reverse1, reverse2;
+    MotorController(std::string controllerName, std::string portName, int reverse1_, int reverse2_) 
         : interface(portName)
     {
-        cmd_sub_1 = n_.subscribe("cmd_"+std::to_string(controller_num)+"_1", 1, &MotorController::cmd_callback_1, this);
-        cmd_sub_2 = n_.subscribe("cmd_"+std::to_string(controller_num)+"_2", 1, &MotorController::cmd_callback_2, this);
+        cmd_sub_1 = n_.subscribe("cmd_"+controllerName+"_aa", 1, &MotorController::cmd_callback_1, this);
+        cmd_sub_2 = n_.subscribe("cmd_"+controllerName+"_fe", 1, &MotorController::cmd_callback_2, this);
+        reverse1 = reverse1_;
+        reverse2 = reverse2_;
     }
     void cmd_callback_1(const std_msgs::Float32& cmd_in) {
         double cur_pos = enc_read_1/4096.*360.;
-        if ( abs(cur_pos - cmd_in.data) >= 5 ) {
-            int dir = ( cmd_in.data > cur_pos) ? 1:-1;
-            int step = 100;
+        double des_pos = cmd_in.data * reverse1 * 5;
+        // std::cout << "Boshen start debugging --------------------" << std::endl;
+        if ( abs(cur_pos - des_pos) >= 20 ) {
+            int dir = ( des_pos > cur_pos) ? 1:-1;
+            int step = 5;
             double temp = cur_pos;
-            while ( abs(temp - cmd_in.data) > step ) {
+            while ( abs(temp - des_pos) > step ) {
                 temp += dir * step;
-                interface.cmdOneChannel(temp/360.*4096/20., 1);
+                // interface.cmdOneChannel(temp/360.*4096/20., 1);
+                // std::cout << temp << std::endl;
             }
-            interface.cmdOneChannel(cmd_in.data/360.*4096/20., 1);
+            interface.cmdOneChannel(des_pos/360.*4096/20., 1);
+            // std::cout << cmd_in.data << std::endl;
         }
     }
     void cmd_callback_2(const std_msgs::Float32& cmd_in) {
         double cur_pos = enc_read_2/4096.*360.;
-        if ( abs(cur_pos - cmd_in.data) >= 5 ) {
-            int dir = ( cmd_in.data > cur_pos) ? 1:-1;
-            int step = 1;
+        double des_pos = cmd_in.data * reverse2 * 25;
+        if ( abs(cur_pos - des_pos) >= 20 ) {
+            int dir = ( des_pos > cur_pos) ? 1:-1;
+            int step = 50;
             double temp = cur_pos;
-            while ( abs(temp - cmd_in.data) > step ) {
+            while ( abs(temp - des_pos) > step ) {
                 temp += dir * step;
                 interface.cmdOneChannel(temp/360.*4096/20., 2);
             }
-            interface.cmdOneChannel(cmd_in.data/360.*4096/20., 2);
+            interface.cmdOneChannel(des_pos/360.*4096/20., 2);
         }
     }
     
@@ -93,17 +101,20 @@ public:
 
 int main (int argc, char** argv) {
   	ros::init (argc, argv, "motor_controller");	
-    MotorController MCObject(1, "/dev/ttyACM0");
+    MotorController MCObject_left("left", "/dev/ttyACM0", 1, 1);
+    MotorController MCObject_right("right", "/dev/ttyACM1", 1, 1);
 
     // ros::Rate loop_rate(100);
     while (ros::ok()) {
         ros::spinOnce();
-        MCObject.interface.readEncoderCh1( & MCObject.enc_read_1);
-        MCObject.interface.readEncoderCh2( & MCObject.enc_read_2);
+        MCObject_left.interface.readEncoderCh1( & MCObject_left.enc_read_1);
+        MCObject_left.interface.readEncoderCh2( & MCObject_left.enc_read_2);
+        MCObject_right.interface.readEncoderCh1( & MCObject_right.enc_read_1);
+        MCObject_right.interface.readEncoderCh2( & MCObject_right.enc_read_2);
 
         std::cout << "-------------start-------------" << std::endl;
-        std::cout << "Encoder Reading 1: " << MCObject.enc_read_1 / 4096. * 360. << std::endl;
-        std::cout << "Encoder Reading 2: " << MCObject.enc_read_2 / 4096. * 360. << std::endl;
+        std::cout << "Left Encoder Reading 1: " << MCObject_left.enc_read_1 / 4096. * 360. << std::endl;
+        std::cout << "Left Encoder Reading 2: " << MCObject_left.enc_read_2 / 4096. * 360. << std::endl;
         std::cout << "-------------end-------------" << std::endl;
         // loop_rate.sleep();
     }
